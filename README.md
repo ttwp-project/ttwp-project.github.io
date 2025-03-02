@@ -32,7 +32,7 @@
 
 ## Подключения к html или локальная установка:
 
- 
+https://github.com/ttwp-project/ttwp-project.github.io/blob/main/styles.css 
 
 https://ttwp-project.github.io/main/speech.js
 
