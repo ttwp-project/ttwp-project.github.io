@@ -30,4 +30,12 @@
 
 📢 **Text to Web Pages – твой контент, готовый к публикации!** 🚀  
 
+## Подключения к html:
+
+https://ttwp-project.github.io/main/speech.js
+
+https://ttwp-project.github.io/main/linkify.js
+
+https://ttwp-project.github.io/main/CoreTTWP.js
+
 
