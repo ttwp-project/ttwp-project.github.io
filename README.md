@@ -30,6 +30,10 @@
 
 📢 **Text to Web Pages – твой контент, готовый к публикации!** 🚀  
 
+## Весь проект можно скачать здесь:
+
+https://github.com/ttwp-project/ttwp-project.github.io/tree/main
+
 ## Подключения к html или локальная установка:
 
 https://github.com/ttwp-project/ttwp-project.github.io/blob/main/styles.css 
