@@ -58,7 +58,7 @@ https://ttwp-project.github.io/main/CoreTTWP.js
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TTWP-project</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://ttwp-project.github.io/styles.css">
 </head>
 
 <body>
