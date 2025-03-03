@@ -114,7 +114,7 @@ async function loadAllPosts(postFiles) {
 
 ```
 
-function displayPosts() {
+function displayPosts1() {
     blogContainer.innerHTML = "";
     
     const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
