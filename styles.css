@@ -163,9 +163,10 @@ body {
     /* Кодовые блоки */
     pre, code {
         background: #f4f4f4;
-        padding: 10px;
+        padding: 5px;
         border-radius: 4px;
         overflow-x: auto;
+        font-size:12px;
         font-family: 'Courier New', monospace;
     }
 
