@@ -1,4 +1,194 @@
-Пример создания видео по ссылке.
+Механизм загрузки текста в Text to Web Pages
 
 
-https://www.onirikal.com/videos/mp4/animatic_caronte.mp4
+
+В основе загрузки текстов в Text to Web Pages лежит асинхронный JavaScript-скрипт CoreBlog.js, который динамически получает и обрабатывает файлы без необходимости перезагрузки страницы.
+
+
+---
+
+🔹 1. Загрузка списка статей
+
+При загрузке страницы скрипт обращается к файлу posts/list.txt, который содержит список статей:
+
+```
+posts/article1.txt
+posts/article2.txt
+posts/article3.txt
+
+```
+
+👉 Механизм загрузки списка статей:
+
+```
+
+async function loadPostList() {
+    showLoading();
+    try {
+        const response = await fetch("posts/list.txt");
+        if (!response.ok) throw new Error("Ошибка загрузки списка статей");
+
+        const text = await response.text();
+        const postFiles = text.split("\n").map(line => line.trim()).filter(line => line !== "");
+
+        await loadAllPosts(postFiles);
+    } catch (error) {
+        console.error(error);
+    } finally {
+        hideLoading();
+    }
+}
+
+```
+
+📌 Этот код:
+
+Загружает list.txt с перечнем файлов.
+
+Разбивает его на строки, удаляя лишние пробелы и пустые строки.
+
+Передаёт список статей в функцию loadAllPosts().
+
+
+
+---
+
+🔹 2. Загрузка и обработка текста статей
+
+После получения списка файлов происходит их поочерёдная загрузка без кэширования:
+
+```
+async function loadAllPosts(postFiles) {
+    allPosts = [];
+
+    for (const file of postFiles) {
+        try {
+            const response = await fetch(file);
+            if (!response.ok) throw new Error(`Ошибка загрузки: ${file}`);
+            const text = await response.text();
+
+            const lines = text.split("\n");
+            const title = lines[0].trim();
+            const date = lines[1].trim();
+            const content = lines.slice(2).join("\n");
+
+            const post = { title, date, content, file };
+            allPosts.push(post);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    filteredPosts = [...allPosts];
+    generateTOC();
+    checkURLForArticle();
+    displayPosts();
+}
+
+```
+
+📌 Этот код:
+
+Запрашивает файлы поочерёдно с помощью fetch().
+
+Разбивает текст на части:
+
+Первая строка – заголовок статьи.
+
+Вторая строка – дата публикации.
+
+Остальное – содержимое статьи.
+
+
+Создаёт массив объектов { title, date, content, file }.
+
+Вызывает рендеринг статей displayPosts().
+
+
+
+---
+
+🔹 3. Вывод загруженных статей на страницу
+
+После загрузки статьи отображаются на странице с поддержкой ссылок и шеринга:
+
+```
+
+function displayPosts() {
+    blogContainer.innerHTML = "";
+    
+    const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+    const startIndex = (currentPage - 1) * postsPerPage;
+    const endIndex = startIndex + postsPerPage;
+    const pagePosts = filteredPosts.slice(startIndex, endIndex);
+
+    pagePosts.forEach((post, i) => {
+        const postSlug = transliterate(post.title);
+        const articleURL = `${window.location.origin}${window.location.pathname}?article=${startIndex}&title=${postSlug}`;
+
+        const processedContent = linkify(post.content);
+
+        const article = document.createElement("div");
+        article.classList.add("post");
+        article.innerHTML = `
+            <h2>${post.title}</h2>
+            <p><small>${post.date}</small></p>
+            <div>${processedContent}</div>
+            <p>
+                <button class="copy-link" data-link="${articleURL}">🔗 Скопировать ссылку</button>
+                <button class="share-link" data-title="${post.title}" data-content="${post.content.substring(0, 150)}..." data-url="${articleURL}">📤 Поделиться</button>
+                <button class="speak-text" data-text="${post.content}">🔊 Озвучить</button>
+            </p>
+            <hr>
+        `;
+        blogContainer.appendChild(article);
+
+        generateMetaTags(post);
+    });
+
+    pageNumber.textContent = `Страница ${currentPage}`;
+    prevButton.disabled = currentPage === 1;
+    nextButton.disabled = currentPage >= totalPages;
+
+    setupCopyAndShare();
+    scrollToTop();
+}
+
+```
+
+📌 Этот код:
+
+Выбирает статьи для текущей страницы.
+
+Формирует URL статьи, транслитерируя заголовок.
+
+Добавляет кнопки копирования ссылки, шеринга и озвучки.
+
+Вызывает generateMetaTags(post) для SEO-оптимизации.
+
+
+
+---
+
+🔹 4. Оптимизация загрузки (Lazy Loading)
+
+Чтобы ускорить работу, используется ленивая загрузка (Lazy Loading):
+
+Загрузка списка статей происходит сначала.
+
+Тексты загружаются только когда они нужны.
+
+
+Сюда можно добавить кэширование с localStorage, чтобы статьи не загружались повторно при каждом заходе.
+
+
+---
+
+⚡ Итог
+
+Механизм загрузки в Text to Web Pages основан на: ✔ Асинхронных запросах fetch() – без задержек и серверных скриптов.
+✔ Обработке файлов в памяти – нет лишних ресурсов на хранение.
+✔ Гибкости и масштабируемости – можно добавить поддержку других форматов, например, .md, .json, .docx.
+
+💡 Text to Web Pages – это статическая система, которая загружает и отображает текст динамически, превращая его в удобные веб-страницы! 🚀
+
